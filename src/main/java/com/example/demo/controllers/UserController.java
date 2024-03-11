@@ -19,7 +19,7 @@ public class UserController {
     }
 
     @GetMapping("/user/{id}")
-    public Optional<MyUser> getUserById(@PathVariable("id") Long id){
+    public MyUser getUserById(@PathVariable("id") Long id){
         return  userService.getUserById(id);
     }
     @PutMapping("/user/{id}/update")

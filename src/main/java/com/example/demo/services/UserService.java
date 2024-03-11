@@ -1,6 +1,7 @@
 package com.example.demo.services;
 
 import com.example.demo.entities.MyUser;
+import com.example.demo.exeptions.UserNotFoundException;
 import com.example.demo.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,23 +15,31 @@ public class UserService {
     private UserRepository userRepository;
 
 
-    public long saveUser(MyUser user){
-       return userRepository.save(user).getId();
+    public long saveUser(MyUser user) {
+        return userRepository.save(user).getId();
 
     }
-    public Optional<MyUser> getUserById(Long id){
-            return userRepository.findById(id);
+
+    public MyUser getUserById(Long id) {
+        Optional<MyUser> user = userRepository.findById(id);
+        if (user.isPresent()) {
+            return user.get();
+        } else {
+            throw new UserNotFoundException("User with id " + id + " doesn't exist");
+        }
+
     }
-    public MyUser updateUser(long id, String name) throws IllegalAccessException {
-       Optional< MyUser> optionalUser = getUserById(id);
-        if(optionalUser.isPresent()){
-            MyUser user = optionalUser.get();
+
+    public MyUser updateUser(long id, String name) {
+
+        Optional<MyUser> userOptional = userRepository.findById(id);
+        if (userOptional.isPresent()) {
+            MyUser user = userOptional.get();
             user.setName(name);
             userRepository.save(user);
             return user;
-
-        }else{
-            throw new IllegalAccessException("User with id " + id + " doesn't exist");
+        } else {
+            throw new UserNotFoundException("User with id " + id + " doesn't exist");
         }
 
 
